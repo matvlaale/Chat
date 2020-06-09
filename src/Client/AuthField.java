@@ -1,5 +1,7 @@
 package Client;
 
+import javafx.stage.Stage;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.DataOutputStream;
@@ -16,9 +18,11 @@ public class AuthField extends JFrame {
 
     JPanel authPanel;
     JButton authBtn;
+    JButton regBtn;
     JTextField login;
     JPasswordField password;
     JTextArea systemMsgs;
+    JTextField nick;
 
     public AuthField(DataOutputStream out) {
         this.out = out;
@@ -29,10 +33,12 @@ public class AuthField extends JFrame {
 
         authPanel = new JPanel();
         authBtn = new JButton("login");
-        login = new JTextField("login", 8);
-        password = new JPasswordField("password", 8);
+        regBtn = new JButton("reg");
+        login = new JTextField("login", 6);
+        password = new JPasswordField("password", 6);
         systemMsgs = new JTextArea("Системные сообщения\n");
         systemMsgs.setLineWrap(true);
+        nick = new JTextField("nick");
 
         authBtn.addActionListener(e -> {
             sendLogPas();
@@ -43,10 +49,17 @@ public class AuthField extends JFrame {
         password.addActionListener(e -> {
             sendLogPas();
         });
-
+        regBtn.addActionListener(e -> {
+            try {
+                register();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
         authPanel.add(login, BorderLayout.WEST);
         authPanel.add(password, BorderLayout.CENTER);
-        authPanel.add(authBtn, BorderLayout.EAST);
+        authPanel.add(authBtn, BorderLayout.CENTER);
+        authPanel.add(regBtn, BorderLayout.EAST);
         add(authPanel, BorderLayout.NORTH);
         add(systemMsgs);
         setVisible(true);
@@ -58,5 +71,17 @@ public class AuthField extends JFrame {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public void register() throws IOException {
+       /*if(nick.getText().equals("nick")){
+           add(nick);
+           nick.setText(login.getText());
+       }
+       else*/
+       nick.setText(login.getText());
+       String str = "/register " + login.getText() + " " + password.getText() + " " + nick.getText();
+       out.writeUTF("/register " + login.getText() + " " + password.getText() + " " + nick.getText());
+        System.out.println("register try " + str);
     }
 }

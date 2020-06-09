@@ -14,9 +14,11 @@ public class ClientField extends JFrame {
     private int WIN_HEIGHT = 400;
 
     JPanel sendFrame;
+    JPanel areasFrame;
     JButton sendBtn;
     JTextField sendFld;
     JTextArea chatArea;
+    JTextArea clientArea;
 
     DataOutputStream out;
 
@@ -27,9 +29,11 @@ public class ClientField extends JFrame {
         setTitle("Interset");
         setResizable(false);
         sendFrame = new JPanel();
+        areasFrame = new JPanel();
         sendBtn = new JButton("Send");
         sendFld = new JTextField("", 19);
-        chatArea = new JTextArea();
+        chatArea = new JTextArea(20, 16);
+        clientArea = new JTextArea(20, 5);
 
         sendBtn.addActionListener(e -> {
             sendMsg();
@@ -39,10 +43,13 @@ public class ClientField extends JFrame {
         });
 
         chatArea.setLineWrap(true);
+        clientArea.setLineWrap(true);
         sendFrame.add(sendFld, BorderLayout.CENTER);
         sendFrame.add(sendBtn, BorderLayout.EAST);
         add(sendFrame, BorderLayout.SOUTH);
-        add(chatArea);
+        add(areasFrame, BorderLayout.CENTER);
+        areasFrame.add(new JScrollPane(chatArea), BorderLayout.WEST);
+        areasFrame.add(clientArea, BorderLayout.EAST);
         setVisible(true);
     }
 

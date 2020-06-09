@@ -45,6 +45,15 @@ public class ThisServer {
         return false;
     }
 
+    public synchronized boolean isLoginBusy(String login) {
+        for (ClientHandler o : clients) {
+            if (o.getName().equals(login)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public synchronized void broadcastMsg(String msg) {
         for (ClientHandler o : clients) {
             o.sendMsg(msg);
@@ -52,21 +61,37 @@ public class ThisServer {
     }
 
     public synchronized void privateMsg(String name, String getter, String msg) {
+        int check = 0;
         for (ClientHandler o : clients)
-            if (o.getName().equals(getter)) {
+            if (o.getName().equals(getter) || o.getName().equals(name)) {
                 o.sendMsg(msg);
-                return;
+                check++;
             }
+        if (check >= 2 || name.equals(getter)) return;
         for (ClientHandler o : clients)
             if (o.getName().equals(name)) o.sendMsg("Пользователь не в чате");
     }
 
+    public synchronized void broadcastClientsList() {
+        StringBuilder sb = new StringBuilder("/clients ");
+        for (ClientHandler o : clients) {
+            sb.append(o.getName() + " ");
+        }
+        broadcastMsg(sb.toString());
+    }
+
+    public void register(String login, String pass, String nick){
+        ((BaseAuthService) authService).register(login, pass, nick);
+    }
+
     public synchronized void unsubscribe(ClientHandler o) {
         clients.remove(o);
+        broadcastClientsList();
     }
 
     public synchronized void subscribe(ClientHandler o) {
         clients.add(o);
+        broadcastClientsList();
     }
 
 }
