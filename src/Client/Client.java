@@ -2,6 +2,7 @@ package Client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -40,27 +41,39 @@ public class Client {
                             if (strFromServer.equalsIgnoreCase("/end")) {
                                 break;
                             }
-                            field.chatArea.append(strFromServer);
-                            field.chatArea.append("\n");
+                            if (strFromServer.startsWith("/clients")) {
+                                field.clientArea.setText(strFromServer);
+                            } else {
+                                field.chatArea.append(strFromServer);
+                                field.chatArea.append("\n");
+                            }
                         }
-                    } catch (Exception e) {
+                    } catch (EOFException e) {
+                        authField.dispose();
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
             t.setDaemon(true);
             t.start();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void setAuthorized(boolean status){
+    private void setAuthorized(boolean status) {
         authorization = status;
     }
 
     public static void main(String[] args) {
         new Client();
+    }
+
+    private boolean isAuthorization(){
+        return authorization;
     }
 }
 
